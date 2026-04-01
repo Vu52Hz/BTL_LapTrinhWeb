@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Trang Chủ - My Library</title>
+    <link rel="stylesheet" href="/Front_end/CSS/Main_Style.css" />
+  </head>
+  <body>
+    <header class="top-header" id="commonHeader"></header>
+
+    <div class="app-layout">
+      <aside class="side-navigation" id="sidebarMenu"></aside>
+
+      <main class="app-container">
+        <section class="toolbar">
+          <div class="search-box">
+            <input
+              type="text"
+              id="homeSearch"
+              placeholder="Tìm sách nhanh..."
+              oninput="renderFeaturedBooks()"
+            />
+          </div>
+          <button class="btn-add" id="btnMainAction">Tạo đơn mượn nhanh</button>
+        </section>
+
+        <div id="libraryInfoContainer"></div>
+
+        <hr class="divider" />
+
+        <h3 id="featuredTitle" class="section-title">
+          Sách đề xuất mượn nhiều
+        </h3>
+        <div
+          class="book-grid"
+          id="featuredBooks"
+          style="display: flex; flex-wrap: wrap; gap: 20px"
+        ></div>
+
+        <h3 class="section-title">Hệ thống phòng đọc</h3>
+        <div class="room-list" id="homeRoomList"></div>
+      </main>
+    </div>
+
+    <div id="modalBorrow" class="modal-overlay">
+      <div class="modal-card" style="width: 650px">
+        <span class="modal-card__close" onclick="closeModal('modalBorrow')"
+          >&times;</span
+        >
+        <div class="modal-card__title">ĐƠN ĐĂNG KÝ MƯỢN</div>
+        <div class="modal-card__body">
+          <div class="modal-card__input-area">
+            <input
+              type="text"
+              id="readerUsername"
+              class="input-field"
+              placeholder="Username người mượn..."
+            />
+
+            <div style="display: flex; gap: 10px">
+              <input
+                type="text"
+                id="readerName"
+                class="input-field"
+                placeholder="Tên người đọc"
+                style="flex: 1"
+              />
+              <input
+                type="text"
+                id="readerPhone"
+                class="input-field"
+                placeholder="Số điện thoại"
+                style="flex: 1"
+              />
+            </div>
+            <select id="readerRoom" class="input-field"></select>
+
+            <div
+              class="borrow-search-wrapper"
+              style="position: relative; margin-top: 10px"
+            >
+              <input
+                type="text"
+                id="modalBookSearch"
+                class="input-field"
+                placeholder="Tìm tên sách để mượn..."
+                oninput="searchBooksInModal()"
+              />
+              <div
+                id="modalBookSearchResult"
+                class="borrow-result-popup"
+                style="width: 100%; top: 45px"
+              ></div>
+            </div>
+
+            <div
+              id="selectedBooksDisplay"
+              class="selected-books-list"
+              style="
+                max-height: 200px;
+                overflow-y: auto;
+                margin-top: 10px;
+                border: 1px solid #ddd;
+                padding: 10px;
+              "
+            >
+              <p style="font-size: 13px; color: #888">
+                Chưa có sách nào được chọn...
+              </p>
+            </div>
+          </div>
+        </div>
+        <button class="btn-submit" onclick="submitBorrowRequest()">
+          Xác nhận mượn
+        </button>
+      </div>
+    </div>
+
+    <div id="modalActiveOrder" class="modal-overlay">
+      <div class="modal-card">
+        <span class="modal-card__close" onclick="closeModal('modalActiveOrder')"
+          >&times;</span
+        >
+        <div class="modal-card__title">ĐƠN MƯỢN HIỆN TẠI</div>
+        <div class="modal-card__body">
+          <div id="activeOrderDetail" class="modal-card__input-area"></div>
+        </div>
+        <div style="padding: 0 30px 30px">
+          <button
+            class="btn-submit"
+            style="
+              width: 100%;
+              margin: 0;
+              background: var(--danger-red);
+              color: white;
+            "
+            onclick="handleFinalCheckOut()"
+          >
+            Trả phòng & Kết thúc
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modalEditInfo" class="modal-overlay">
+      <div class="modal-card">
+        <span class="modal-card__close" onclick="closeModal('modalEditInfo')"
+          >&times;</span
+        >
+        <div class="modal-card__title">SỬA THÔNG TIN CƠ SỞ</div>
+        <div class="modal-card__body">
+          <div class="modal-card__input-area">
+            <input
+              type="text"
+              id="editLibName"
+              class="input-field"
+              placeholder="Tên cơ sở"
+            />
+            <input
+              type="text"
+              id="editLibAddress"
+              class="input-field"
+              placeholder="Địa chỉ"
+            />
+            <input
+              type="text"
+              id="editLibHotline"
+              class="input-field"
+              placeholder="Hotline"
+            />
+            <textarea
+              id="editLibDesc"
+              class="input-field"
+              placeholder="Mô tả ngắn"
+              rows="3"
+            ></textarea>
+          </div>
+        </div>
+        <button class="btn-submit" onclick="saveLibraryInfo()">
+          Lưu thay đổi
+        </button>
+      </div>
+    </div>
+
+    <script src="/Front_end/JS/common.js"></script>
+    <script src="/Front_end/JS/trangchu.js"></script>
+  </body>
+</html>

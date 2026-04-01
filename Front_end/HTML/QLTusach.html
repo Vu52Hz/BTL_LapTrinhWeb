@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Quản lý Tủ sách - My Library</title>
+    <link rel="stylesheet" href="/Front_end/CSS/Main_Style.css" />
+  </head>
+  <body>
+    <header class="top-header" id="commonHeader"></header>
+    <div class="app-layout">
+      <aside class="side-navigation" id="sidebarMenu"></aside>
+      <main class="app-container">
+        <section class="toolbar">
+          <div class="search-box">
+            <input
+              type="text"
+              id="cabSearchInput"
+              placeholder="Tìm tên tủ..."
+              oninput="renderCabinets()"
+            />
+          </div>
+          <button class="btn-add admin-only" onclick="openCabinetModal()">
+            Thêm tủ mới
+          </button>
+        </section>
+        <main class="cabinet-list" id="cabinetListContainer"></main>
+      </main>
+    </div>
+
+    <div id="modalOverlayCabinets" class="modal-overlay">
+      <div class="modal-card">
+        <span class="modal-card__close" onclick="closeCabinetModal()"
+          >&times;</span
+        >
+        <div class="modal-card__title" id="cabModalTitle">
+          THÔNG TIN TỦ SÁCH
+        </div>
+        <div class="modal-card__body">
+          <div class="modal-card__image-area">
+            <label class="label-tag">Ảnh tủ sách</label>
+            <div
+              class="upload-box-book"
+              onclick="document.getElementById('cabImageInput').click()"
+            >
+              <img
+                id="cabImagePreview"
+                src=""
+                style="
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                  display: none;
+                "
+              />
+              <span id="cabUploadPlaceholder">+</span>
+            </div>
+            <input
+              type="file"
+              id="cabImageInput"
+              accept="image/*"
+              style="display: none"
+              onchange="previewCabinetImage(event)"
+            />
+          </div>
+          <div class="modal-card__input-area">
+            <input
+              type="text"
+              id="cabNameInput"
+              class="input-field"
+              placeholder="Tên tủ sách"
+              autocomplete="off"
+            />
+            <textarea
+              id="cabNoteInput"
+              class="input-field"
+              placeholder="Ghi chú (Note)"
+              rows="3"
+            ></textarea>
+          </div>
+        </div>
+        <button class="btn-submit" onclick="saveCabinet()">Xác nhận</button>
+      </div>
+    </div>
+
+    <script src="/Front_end/JS/common.js"></script>
+    <script src="/Front_end/JS/qltu.js"></script>
+  </body>
+</html>

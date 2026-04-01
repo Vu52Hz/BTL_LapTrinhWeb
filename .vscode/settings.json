@@ -1,0 +1,5 @@
+{
+  "liveServer.settings.port": 5501,
+  "maven.view": "hierarchical",
+  "java.compile.nullAnalysis.mode": "disabled"
+}

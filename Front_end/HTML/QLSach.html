@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Quản lý Sách - My Library</title>
+    <link rel="stylesheet" href="/Front_end/CSS/Main_Style.css" />
+  </head>
+  <body>
+    <header class="top-header" id="commonHeader"></header>
+    <div class="app-layout">
+      <aside class="side-navigation" id="sidebarMenu"></aside>
+      <main class="app-container">
+        <div class="toolbar">
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 10px;
+              flex: 1;
+              min-width: 300px;
+            "
+          >
+            <div class="search-box">
+              <input
+                type="text"
+                id="bookSearchInput"
+                placeholder="Tìm tên sách..."
+                oninput="renderBooksList()"
+              />
+            </div>
+            <button
+              style="width: fit-content"
+              class="btn-add admin-only"
+              onclick="openBookModal()"
+            >
+              Nhập sách mới
+            </button>
+          </div>
+          <select
+            id="filterCabinet"
+            onchange="renderBooksList()"
+            style="width: 150px"
+          >
+            <option value="">-- Tất cả các tủ --</option>
+          </select>
+
+          <button class="btn-add" id="btnMainAction">Đang tải...</button>
+        </div>
+
+        <div class="book-list-container" id="bookList"></div>
+      </main>
+    </div>
+
+    <div id="modalOverlayBook" class="modal-overlay">
+      <div class="modal-card">
+        <span class="modal-card__close" onclick="closeModal('modalOverlayBook')"
+          >&times;</span
+        >
+        <div class="modal-card__title" id="bookModalTitle">Thêm sách mới</div>
+        <div class="modal-card__body">
+          <div class="modal-card__image-area">
+            <label class="label-tag">Ảnh bìa</label>
+            <div
+              class="upload-box-book"
+              onclick="document.getElementById('bookImageInput').click()"
+            >
+              <img
+                id="bookImagePreview"
+                src=""
+                style="
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                  display: none;
+                "
+              />
+              <span id="bookUploadPlaceholder">+</span>
+            </div>
+            <input
+              type="file"
+              id="bookImageInput"
+              accept="image/*"
+              style="display: none"
+              onchange="previewBookImage(event)"
+            />
+          </div>
+
+          <div class="modal-card__input-area">
+            <input
+              type="text"
+              id="bookName"
+              class="input-field"
+              placeholder="Tên sách"
+              autocomplete="off"
+            />
+            <input
+              type="text"
+              id="bookAuthor"
+              class="input-field"
+              placeholder="Tên tác giả"
+              autocomplete="off"
+            />
+
+            <div style="display: flex; gap: 10px">
+              <input
+                type="text"
+                id="bookYear"
+                class="input-field"
+                placeholder="Năm XB"
+                style="width: 40%"
+              />
+              <input
+                type="text"
+                id="bookGenre"
+                class="input-field"
+                placeholder="Thể loại"
+                style="width: 60%"
+              />
+            </div>
+
+            <div class="borrow-search-wrapper" style="margin-top: 5px">
+              <input
+                type="text"
+                id="cabinetSearchInput"
+                class="input-field"
+                placeholder="Tìm tủ sách để nhập vào..."
+                autocomplete="off"
+              />
+              <div id="cabinetResultPopup" class="borrow-result-popup"></div>
+            </div>
+
+            <div id="selectedCabinetsDisplay" class="selected-books-list"></div>
+          </div>
+        </div>
+        <button class="btn-submit" id="btnConfirmBook">Xác nhận</button>
+      </div>
+    </div>
+
+    <script src="/Front_end/JS/common.js"></script>
+    <script src="/Front_end/JS/booking-handler.js"></script>
+    <script src="/Front_end/JS/qlsach.js"></script>
+  </body>
+</html>

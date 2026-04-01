@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Quản lý tài khoản - My Library</title>
+    <link rel="stylesheet" href="/Front_end/CSS/Main_Style.css" />
+  </head>
+  <body>
+    <header class="top-header" id="commonHeader"></header>
+    <div class="app-layout">
+      <aside class="side-navigation" id="sidebarMenu"></aside>
+      <main class="app-container">
+        <div class="toolbar">
+          <div class="search-box">
+            <input
+              type="text"
+              id="userSearch"
+              placeholder="Tìm tên hoặc username..."
+              oninput="renderUsers()"
+            />
+          </div>
+          <div
+            class="filter-group"
+            style="
+              display: flex;
+              gap: 15px;
+              align-items: center;
+              margin-left: 20px;
+            "
+          >
+            <label
+              ><input
+                type="checkbox"
+                id="filterActive"
+                checked
+                onchange="renderUsers()"
+              />
+              Hoạt động</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                id="filterLocked"
+                checked
+                onchange="renderUsers()"
+              />
+              Bị khóa</label
+            >
+          </div>
+          <button class="btn-add" onclick="openUserModal()">
+            Thêm tài khoản
+          </button>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Họ tên</th>
+                <th>Email</th>
+                <th>Số điện thoại</th>
+                <th>Tên đăng nhập</th>
+                <th>Vai trò</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="userTableBody"></tbody>
+          </table>
+        </div>
+
+        <div id="modalEditUser" class="modal-overlay">
+          <div class="modal-card">
+            <span
+              class="modal-card__close"
+              onclick="closeModal('modalEditUser')"
+              >&times;</span
+            >
+            <div class="modal-card__title" id="userModalTitle">
+              THÊM TÀI KHOẢN MỚI
+            </div>
+            <div class="modal-card__body">
+              <div class="modal-card__input-area">
+                <input
+                  type="text"
+                  id="editFullname"
+                  class="input-field"
+                  placeholder="Họ và tên"
+                />
+                <input
+                  type="text"
+                  id="editEmail"
+                  class="input-field"
+                  placeholder="Email"
+                />
+                <input
+                  type="text"
+                  id="editPhone"
+                  class="input-field"
+                  placeholder="Số điện thoại"
+                />
+                <input
+                  type="text"
+                  id="editUsername"
+                  class="input-field"
+                  placeholder="Tên đăng nhập"
+                />
+                <input
+                  type="password"
+                  id="editPassword"
+                  class="input-field"
+                  placeholder="Mật khẩu"
+                />
+              </div>
+            </div>
+            <button class="btn-submit" onclick="saveUser()">
+              Lưu tài khoản
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/Front_end/JS/common.js"></script>
+    <script src="/Front_end/JS/qltaikhoan.js"></script>
+  </body>
+</html>

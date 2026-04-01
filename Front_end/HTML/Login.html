@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Libra - Đăng nhập & Đăng ký</title>
+    <link rel="stylesheet" href="/Front_end/CSS/Main_Style.css" />
+  </head>
+  <body>
+    <div class="auth-page-wrapper">
+      <h1 class="main-title">CHÀO MỪNG ĐẾN VỚI LIBRA</h1>
+
+      <div class="glass-card">
+        <div class="brand-side">
+          <div class="brand-logo-container">
+            <img
+              src="/Front_end/img/logo.jpg"
+              alt="Logo"
+              class="header__logo"
+            />
+            <span class="header__name">My Library</span>
+          </div>
+          <p class="slogan-text">
+            Hành trình tri thức,<br />
+            mở cửa tương lai
+          </p>
+        </div>
+
+        <div class="form-side">
+          <!-- Form đăng ký -->
+          <div id="register-form" class="hidden">
+            <h3 class="auth-section-title">ĐĂNG KÝ TÀI KHOẢN</h3>
+
+            <div class="auth-input-group">
+              <label class="auth-label">Họ và tên</label>
+              <input
+                type="text"
+                id="reg-fullname"
+                placeholder="Nhập họ và tên..."
+              />
+            </div>
+
+            <div class="auth-input-group">
+              <label class="auth-label">Email</label>
+              <input
+                type="text"
+                id="reg-email"
+                placeholder="example@gmail.com"
+              />
+            </div>
+
+            <div class="auth-input-group">
+              <label class="auth-label">Số điện thoại</label>
+              <input type="text" id="reg-phone" placeholder="0123xxx..." />
+            </div>
+
+            <div class="auth-input-group">
+              <label class="auth-label">Tên đăng nhập</label>
+              <input type="text" id="reg-username" />
+            </div>
+
+            <div class="auth-input-group">
+              <label class="auth-label">Mật khẩu</label>
+              <input type="password" id="reg-password" class="password-input" />
+              <div class="show-password-container">
+                <input
+                  type="checkbox"
+                  id="check-reg"
+                  onclick="togglePassword('reg-password')"
+                />
+                <label for="check-reg">Hiển thị mật khẩu</label>
+              </div>
+            </div>
+
+            <button class="btn-submit auth-btn-full">ĐĂNG KÝ</button>
+
+            <p class="auth-switch">
+              Đã có tài khoản?
+              <a href="javascript:void(0)" onclick="toggleAuthForm()"
+                >Đăng nhập ngay</a
+              >
+            </p>
+          </div>
+          <!-- Form đăng nhập -->
+          <div id="login-form">
+            <h3 class="auth-section-title">ĐĂNG NHẬP</h3>
+
+            <div class="auth-input-group">
+              <label class="auth-label">Tên đăng nhập</label>
+              <input
+                type="text"
+                id="login-username"
+                placeholder="Username..."
+              />
+            </div>
+
+            <div class="auth-input-group">
+              <label class="auth-label">Mật khẩu</label>
+              <input
+                type="password"
+                id="login-password"
+                class="password-input"
+              />
+              <div class="show-password-container">
+                <input
+                  type="checkbox"
+                  id="check-login"
+                  onclick="togglePassword('login-password')"
+                />
+                <label for="check-login">Hiển thị mật khẩu</label>
+              </div>
+            </div>
+
+            <button class="btn-submit auth-btn-full auth-mt-25">
+              ĐĂNG NHẬP
+            </button>
+
+            <p class="auth-switch">
+              Bạn chưa có tài khoản?
+              <a href="javascript:void(0)" onclick="toggleAuthForm()"
+                >Đăng ký ngay</a
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/Front_end/JS/auth.js"></script>
+  </body>
+</html>

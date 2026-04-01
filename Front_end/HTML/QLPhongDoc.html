@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Quản lý Phòng đọc - My Library</title>
+    <link rel="stylesheet" href="/Front_end/CSS/Main_Style.css" />
+  </head>
+  <body>
+    <header class="top-header" id="commonHeader"></header>
+    <div class="app-layout">
+      <aside class="side-navigation" id="sidebarMenu"></aside>
+      <main class="app-container">
+        <section class="toolbar">
+          <div class="search-box">
+            <input
+              type="text"
+              id="roomSearchInput"
+              placeholder="Tìm tên phòng..."
+              oninput="renderRooms()"
+            />
+          </div>
+          <button class="btn-add admin-only" onclick="openAddRoom()">
+            Thêm phòng mới
+          </button>
+        </section>
+        <main class="room-list" id="roomListContainer"></main>
+      </main>
+    </div>
+
+    <div id="modalOverlayRooms" class="modal-overlay">
+      <div class="modal-card">
+        <span
+          class="modal-card__close"
+          onclick="closeModal('modalOverlayRooms')"
+          >&times;</span
+        >
+        <div class="modal-card__title" id="roomModalTitle">
+          THÔNG TIN PHÒNG ĐỌC
+        </div>
+        <div class="modal-card__body">
+          <div class="modal-card__image-area">
+            <label class="label-tag">Ảnh phòng</label>
+            <div
+              class="upload-box-book"
+              onclick="document.getElementById('roomImageInput').click()"
+            >
+              <img
+                id="roomImagePreview"
+                src=""
+                style="
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
+                  display: none;
+                "
+              />
+              <span id="uploadPlaceholder">+</span>
+            </div>
+            <input
+              type="file"
+              id="roomImageInput"
+              accept="image/*"
+              style="display: none"
+              onchange="previewAndUploadImage(event)"
+            />
+          </div>
+
+          <div class="modal-card__input-area">
+            <input type="text" id="roomNameInput" placeholder="Tên phòng đọc" />
+
+            <div class="counter">
+              <span class="counter__label">Số chỗ tối đa</span>
+              <div class="counter__controls">
+                <button class="counter__btn" onclick="changeQty('roomQty', -1)">
+                  −
+                </button>
+                <input type="number" id="roomQty" value="1" min="1" />
+                <button class="counter__btn" onclick="changeQty('roomQty', 1)">
+                  +
+                </button>
+              </div>
+            </div>
+
+            <textarea id="roomNoteInput" placeholder="Ghi chú"></textarea>
+          </div>
+        </div>
+        <button class="btn-submit" id="btnConfirmAddRoom">Lưu lại</button>
+      </div>
+    </div>
+
+    <script src="/Front_end/JS/common.js"></script>
+    <script src="/Front_end/JS/qlphong.js"></script>
+  </body>
+</html>

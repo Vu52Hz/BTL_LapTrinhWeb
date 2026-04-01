@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Lịch sử - My Library</title>
+    <link rel="stylesheet" href="/Front_end/CSS/Main_Style.css" />
+  </head>
+  <body>
+    <header class="top-header" id="commonHeader"></header>
+    <div class="app-layout">
+      <aside class="side-navigation" id="sidebarMenu"></aside>
+      <main class="app-container">
+        <div class="toolbar" style="flex-wrap: wrap; gap: 20px">
+          <div style="display: flex; gap: 10px; flex: 1; min-width: 300px">
+            <div class="search-box">
+              <input
+                type="text"
+                id="historySearch"
+                placeholder="Tìm theo tên"
+                oninput="renderHistory()"
+              />
+            </div>
+            <select
+              id="filterRoom"
+              onchange="renderHistory()"
+              style="width: 150px"
+            >
+              <option value="">-- Tất cả phòng --</option>
+            </select>
+          </div>
+
+          <div style="display: flex; gap: 10px; align-items: center">
+            <span>Từ:</span>
+            <input type="date" id="dateFrom" onchange="renderHistory()" />
+            <span>Đến:</span>
+            <input type="date" id="dateTo" onchange="renderHistory()" />
+          </div>
+
+          <div
+            style="
+              display: flex;
+              gap: 15px;
+              align-items: center;
+              background: #eee;
+              padding: 5px 15px;
+              border-radius: 4px;
+            "
+          >
+            <label style="cursor: pointer"
+              ><input
+                type="checkbox"
+                id="statusReading"
+                checked
+                onchange="renderHistory()"
+              />
+              Đang đọc</label
+            >
+            <label style="cursor: pointer"
+              ><input
+                type="checkbox"
+                id="statusFinished"
+                checked
+                onchange="renderHistory()"
+              />
+              Đã trả</label
+            >
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Tên người đọc</th>
+                <th>Phòng</th>
+                <th>Giờ vào</th>
+                <th>Giờ trả</th>
+                <th>Sách mượn</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <script src="/Front_end/JS/common.js"></script>
+    <script src="/Front_end/JS/qllichsu.js"></script>
+  </body>
+</html>
