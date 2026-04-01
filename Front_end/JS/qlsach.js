@@ -84,7 +84,7 @@ async function renderBooksList() {
                             <span>${inv.cabinetName}: <b>${inv.availableInCabinet}/${inv.totalInCabinet}</b></span>
                             <button class="btn-borrow-mini" 
                               ${(inv.availableInCabinet || 0) > 0 ? "" : "disabled"}
-                              onclick="handleBookAction(${b.id}, '${b.title.replace(/'/g, "\\'")}', ${inv.inventoryId})">
+                              onclick="handleBookAction(${b.id}, '${b.title}', ${inv.inventoryId}, '${inv.cabinetName}')">
                               ${(inv.availableInCabinet || 0) > 0 ? "Chọn mượn" : "Hết"}
                           </button>
                         </div>
@@ -122,85 +122,6 @@ async function renderBooksList() {
     applyAdminRestrictions();
   } catch (err) {
     console.error("Lỗi hiển thị:", err);
-  }
-}
-
-// --- QUẢN LÝ SÁCH CHỌN MƯỢN TỪ LOCALSTORAGE ---
-function getSelectedBooks() {
-  return JSON.parse(localStorage.getItem("selectedBooks") || "[]");
-}
-
-function saveSelectedBooks(books) {
-  localStorage.setItem("selectedBooks", JSON.stringify(books));
-}
-
-// Hàm xử lý chọn mượn sách (Logic mượn nhanh hoặc thêm vào giỏ)
-function handleBookAction(id, title, inventoryId) {
-  // Bỏ qua check currentActiveBooking nếu qlsach.js không lưu biến này,
-  // Hoặc kiểm tra qua API nếu cần. Ở đây ta thêm thẳng vào giỏ.
-  if (!inventoryId) {
-    alert("Sách này hiện đã hết ở tất cả các tủ!");
-    return;
-  }
-
-  let books = getSelectedBooks();
-  const isExisted = books.find((x) => x.inventoryId === inventoryId);
-
-  if (!isExisted) {
-    books.push({ id, title, inventoryId });
-    saveSelectedBooks(books);
-    alert(`Đã thêm "${title}" vào danh sách.`);
-  } else {
-    alert("Cuốn sách ở tủ này đã được bạn chọn rồi!");
-  }
-  renderSelectedBooks();
-}
-
-function renderSelectedBooks() {
-  const container = document.getElementById("selectedBooksDisplay");
-  if (!container) return; // Nếu giao diện qlsach chưa có phần này thì bỏ qua
-
-  let books = getSelectedBooks();
-
-  if (books.length === 0) {
-    container.innerHTML = `<p style="font-size: 13px; color: #888;">Chưa có sách nào được chọn...</p>`;
-    return;
-  }
-  container.innerHTML = books
-    .map(
-      (b) => `
-        <div class="selected-book-item">
-            <span>${b.title}</span>
-            <span onclick="removeBook(${b.id})" style="color:red; cursor:pointer; font-weight:bold;">&times;</span>
-        </div>
-    `,
-    )
-    .join("");
-}
-
-function removeBook(id) {
-  let books = getSelectedBooks();
-  books = books.filter((x) => x.id !== id);
-  saveSelectedBooks(books);
-  renderSelectedBooks();
-}
-
-async function addMoreBookToActiveBooking(bookingId, inventoryId) {
-  try {
-    const res = await fetch(`${API_URL}/bookings/${bookingId}/add-books`, {
-      method: "POST",
-      headers: getHeaders(),
-      body: JSON.stringify([inventoryId]),
-    });
-    if (res.ok) {
-      alert("Đã thêm sách thành công!");
-      renderBooksList();
-    } else {
-      const data = await res.json();
-      alert("Lỗi: " + data.message);
-    }
-  } catch (error) {
-    alert("Lỗi kết nối!");
   }
 }
 
@@ -256,7 +177,7 @@ async function openBookModal(id = null) {
         inventoryId: inv.id,
         idCabinet: inv.cabinetId,
         name: inv.cabinetName,
-        quantity: inv.quantity,
+        quantity: inv.totalInCabinet,
       }));
 
       const imgPreview = document.getElementById("bookImagePreview");
@@ -332,7 +253,7 @@ function renderSelectedCabinetsUI() {
             </div>
             <div class="cabinet-qty-control">
                 <button class="qty-btn" onclick="updateCabinetQtyInList(${index}, -1)">-</button>
-                <input type="number" value="${c.quantity}" readonly style="width: 60px; text-align: center;">
+                <input type="number" value="${c.quantity}" style="width: 60px; text-align: center;">
                 <button class="qty-btn" onclick="updateCabinetQtyInList(${index}, 1)">+</button>
             </div>
         </div>

@@ -126,22 +126,22 @@ public class BookingService {
     }
 
     @Transactional
-    public void adminCheckout(Long bookingId) {
-        Booking booking = bookingRepository.findByIdWithDetails(bookingId)
-                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
-
-        performCheckout(booking);
-    }
-
-    @Transactional
     public void userCheckout(Long bookingId, User currentUser) {
         Booking booking = bookingRepository.findByIdWithDetails(bookingId)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
-        if (!booking.getUser().getId().equals(currentUser.getId())) {
+        // Kiểm tra xem current user có phải là ADMIN không
+        boolean isAdmin = currentUser.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        // // Nếu không phải ADMIN VÀ không phải chủ nhân của đơn mượn thì mới chặn
+        // if (!isAdmin && !booking.getUser().getId().equals(currentUser.getId())) {
+        //     throw new AppException(ErrorCode.ACCESS_DENIED);
+        // }
+        if (!isAdmin) {
             throw new AppException(ErrorCode.ACCESS_DENIED);
         }
-
+        
         performCheckout(booking);
     }
 

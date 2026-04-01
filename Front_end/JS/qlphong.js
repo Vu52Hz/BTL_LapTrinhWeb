@@ -54,14 +54,12 @@ async function renderRooms() {
         const imgUrl = r.imageUrl
           ? `http://localhost:8080${r.imageUrl}`
           : "/Front_end/img/logo.jpg";
-        const bookCount = roomBookCount[r.id] || 0;
         return `
             <div class="card-item">
                 <img src="${imgUrl}" class="card-item__img">
                 <div class="card-item__info">
                     <h3>${r.name}</h3>
                     <p>Còn Trống: <strong>${r.availableSlots || 0}/${r.capacity || 0}</strong></p>
-                    <p>Số sách trong phòng: <strong>${bookCount}</strong></p>
                     <p>Ghi chú: ${r.note || "Không có"}</p>
                     <div class="actions">
                         <button class="btn-action admin-only" onclick="openEditRoom(${r.id})">Sửa Thông Tin</button>

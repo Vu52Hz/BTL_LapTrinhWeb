@@ -133,8 +133,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       })
       .join("");
   }
-  // Tự động chèn Modal vào mọi trang
-  const modalHtml = `
+  // Tự động chèn Modal vào mọi trang nếu chưa có
+  if (
+    !document.getElementById("modalBorrow") ||
+    !document.getElementById("modalActiveOrder")
+  ) {
+    const modalHtml = `
     <div id="modalBorrow" class="modal-overlay">
         <div class="modal-card" style="width:600px">
             <span class="modal-card__close" onclick="closeModal('modalBorrow')">&times;</span>
@@ -161,12 +165,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             <span class="modal-card__close" onclick="closeModal('modalActiveOrder')">&times;</span>
             <div class="modal-card__title">ĐƠN ĐANG SỬ DỤNG</div>
             <div class="modal-card__body"><div id="activeOrderDetail"></div></div>
-            <div style="padding:0 30px 30px">
-                <button class="btn-submit" style="width:100%; background:var(--danger-red);" onclick="handleFinalCheckOut()">Trả phòng & Kết thúc</button>
-            </div>
         </div>
     </div>`;
-  document.body.insertAdjacentHTML("beforeend", modalHtml);
+    document.body.insertAdjacentHTML("beforeend", modalHtml);
+  }
 
   // Khởi tạo nút mượn
   if (typeof initBookingStatus === "function") {

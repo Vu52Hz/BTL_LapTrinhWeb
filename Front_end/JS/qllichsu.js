@@ -57,7 +57,7 @@ async function renderHistory() {
     // Lọc theo từ khóa (Tên người dùng hoặc tên phòng)
     if (kw) {
       data = data.filter(
-        (h) => h.userName && h.userName.toLowerCase().includes(kw)
+        (h) => h.userName && h.userName.toLowerCase().includes(kw),
       );
     }
 
@@ -162,7 +162,7 @@ async function handleCheckOut(bookingId) {
   if (!confirm("Xác nhận người dùng đã trả tất cả sách và rời phòng?")) return;
 
   try {
-    const response = await fetch(`${BOOKING_API}/${bookingId}/admin-checkout`, {
+    const response = await fetch(`${BOOKING_API}/${bookingId}/checkout`, {
       method: "PUT",
       headers:
         typeof getHeaders === "function"

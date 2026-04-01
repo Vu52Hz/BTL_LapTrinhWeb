@@ -523,6 +523,17 @@ select {
   width: 100%;
 }
 
+/* Ẩn mũi tên cho Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Ẩn mũi tên cho Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
 /* Phân quyền Admin: Mặc định ẩn, hiện khi body có class is-admin */
 .admin-only {
   display: none !important;

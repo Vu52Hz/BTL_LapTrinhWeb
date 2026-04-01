@@ -2,11 +2,23 @@
  * BOOKING HANDLER - Module xử lý mượn sách dùng chung cho toàn bộ hệ thống
  */
 
-window.selectedBooks = [];
 window.currentActiveBooking = null;
+
+function getSelectedBooks() {
+  return JSON.parse(localStorage.getItem("selectedBooks") || "[]");
+}
+
+function saveSelectedBooks(books) {
+  localStorage.setItem("selectedBooks", JSON.stringify(books));
+}
+
+function clearSelectedBooks() {
+  localStorage.removeItem("selectedBooks");
+}
 
 // 1. Khởi tạo trạng thái nút mượn (Gọi mỗi khi load trang)
 async function initBookingStatus() {
+  window.selectedBooks = getSelectedBooks();
   try {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -24,7 +36,7 @@ async function initBookingStatus() {
 
       // Logic hiển thị: Admin chỉ thấy ở Trang chủ, User thấy ở mọi nơi
       if (isAdmin && !isHomePage) {
-        // btnMain.style.display = "none";
+        btnMain.style.display = "none";
       } else {
         btnMain.style.display = "block";
         if (window.currentActiveBooking) {
@@ -37,6 +49,11 @@ async function initBookingStatus() {
           btnMain.onclick = () => openBorrowModal();
         }
       }
+    }
+
+    // Render selected books nếu có
+    if (typeof renderSelectedBooks === "function") {
+      renderSelectedBooks();
     }
   } catch (error) {
     console.error("Lỗi khởi tạo trạng thái mượn:", error);
@@ -131,9 +148,8 @@ async function openBorrowModal(defaultRoomId = null) {
 
   // Tải danh sách phòng
   if (roomSelect) {
-    const rooms = await getAllRooms("");
+    const rooms = await getAllRooms();
     roomSelect.innerHTML = (rooms || [])
-      .filter((r) => r.isActive)
       .map(
         (
           r,
@@ -190,36 +206,88 @@ function addBookWithCabinet(bookId, bookTitle) {
   const cabinetName = select.options[select.selectedIndex].text
     .split("(")[0]
     .trim();
-  handleBookAction(bookId, `${bookTitle} [${cabinetName}]`, inventoryId);
+
+  // TRUYỀN TÁCH BIỆT TITLE VÀ CABINET NAME
+  handleBookAction(bookId, bookTitle, inventoryId, cabinetName);
 }
 
 // 6. Xử lý logic mượn chính
-function handleBookAction(id, title, inventoryId) {
-  if (window.currentActiveBooking)
-    return alert("Bạn đang có một đơn mượn chưa kết thúc!");
+async function addMoreBookToActiveBooking(bookingId, inventoryId) {
+  if (!confirm("Bạn có muốn thêm sách này vào đơn mượn hiện tại?"))
+    return false;
+  try {
+    const res = await fetch(`${API_URL}/bookings/${bookingId}/add-books`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify([inventoryId]),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert("Đã thêm sách vào đơn mượn hiện tại.");
+      window.currentActiveBooking = await getMyActiveBooking();
+      renderSelectedBooks();
+      return true;
+    }
+    alert("Lỗi thêm sách: " + (data.message || "Không xác định"));
+    return false;
+  } catch (error) {
+    alert("Lỗi kết nối server khi thêm sách vào đơn.");
+    console.error(error);
+    return false;
+  }
+}
+
+async function handleBookAction(
+  id,
+  title,
+  inventoryId,
+  cabinetName = "Chưa rõ vị trí",
+) {
   if (!inventoryId) return alert("Hết sách!");
 
-  const isExisted = window.selectedBooks.find(
-    (x) => x.inventoryId === inventoryId,
-  );
-  if (!isExisted) {
-    window.selectedBooks.push({ id, title, inventoryId });
-    renderSelectedBooks();
+  // Nếu đã có đơn mượn đang dùng, thêm trực tiếp vào đơn của người dùng
+  if (window.currentActiveBooking) {
+    await addMoreBookToActiveBooking(
+      window.currentActiveBooking.id,
+      inventoryId,
+    );
+    return;
   }
+
+  const selected = getSelectedBooks();
+  const isExisted = selected.find((x) => x.inventoryId === inventoryId);
+  if (isExisted) {
+    alert("Cuốn sách ở tủ này đã được bạn chọn rồi!");
+    return;
+  }
+
+  // LƯU THÊM CABINET NAME VÀO ĐÂY
+  selected.push({ id, title, inventoryId, cabinetName });
+
+  saveSelectedBooks(selected);
+  window.selectedBooks = selected;
+  renderSelectedBooks();
+  alert("Đã thêm sách vào danh sách mượn.");
 }
 
 function renderSelectedBooks() {
   const container = document.getElementById("selectedBooksDisplay");
   if (!container) return;
-  if (window.selectedBooks.length === 0) {
+
+  const selected = getSelectedBooks();
+  if (selected.length === 0) {
     container.innerHTML = `<p style="font-size:13px; color:#888;">Chưa có sách nào...</p>`;
     return;
   }
-  container.innerHTML = window.selectedBooks
+
+  container.innerHTML = selected
     .map(
       (b) => `
         <div class="selected-book-item" style="display:flex; justify-content:space-between; background:#f0f7f4; padding:5px 10px; margin-bottom:5px; border-radius:4px;">
-            <span>${b.title}</span>
+            <div>
+                <span>${b.title}</span>
+                <br><small style="color:#666;">Tủ: ${b.cabinetName || "N/A"}</small>
+            </div>
             <span onclick="removeBook(${b.inventoryId})" style="color:red; cursor:pointer; font-weight:bold;">&times;</span>
         </div>
     `,
@@ -228,20 +296,47 @@ function renderSelectedBooks() {
 }
 
 function removeBook(invId) {
-  window.selectedBooks = window.selectedBooks.filter(
-    (x) => x.inventoryId !== invId,
-  );
+  const selected = getSelectedBooks().filter((x) => x.inventoryId !== invId);
+  saveSelectedBooks(selected);
+  window.selectedBooks = selected;
   renderSelectedBooks();
 }
 
 async function submitBorrowRequest() {
-  const roomId = document.getElementById("readerRoom").value;
+  const roomId = document.getElementById("readerRoom")?.value;
   if (!roomId) return alert("Chọn phòng!");
-  if (window.selectedBooks.length === 0) return alert("Chọn sách!");
 
-  const isAdmin = JSON.parse(localStorage.getItem("roles")).some(
-    (r) => r.authority === "ROLE_ADMIN",
-  );
+  const selected = getSelectedBooks();
+
+  // Nếu đang có đơn mượn đang dùng thì thêm vào đơn, không tạo mới
+  if (window.currentActiveBooking) {
+    if (selected.length === 0) return alert("Chưa có sách nào để thêm!");
+    const inventoryIds = selected.map((b) => b.inventoryId);
+
+    const res = await fetch(
+      `${API_URL}/bookings/${window.currentActiveBooking.id}/add-books`,
+      {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify(inventoryIds),
+      },
+    );
+    const data = await res.json();
+    if (res.ok) {
+      alert("Đã thêm sách vào đơn mượn hiện tại.");
+      clearSelectedBooks();
+      window.selectedBooks = [];
+      window.currentActiveBooking = await getMyActiveBooking();
+      renderSelectedBooks();
+      return;
+    }
+    return alert("Lỗi: " + (data.message || "Không xác định"));
+  }
+
+  if (selected.length === 0) return alert("Chọn sách!");
+
+  const roles = JSON.parse(localStorage.getItem("roles") || "[]");
+  const isAdmin = roles.some((r) => r.authority === "ROLE_ADMIN");
   const targetUserId = isAdmin
     ? document.getElementById("modalBorrow").getAttribute("data-user-id")
     : null;
@@ -249,15 +344,23 @@ async function submitBorrowRequest() {
   const payload = {
     roomId: parseInt(roomId),
     userId: targetUserId,
-    inventoryIds: window.selectedBooks.map((b) => b.inventoryId),
+    inventoryIds: selected.map((b) => b.inventoryId),
     note: "Đăng ký từ hệ thống",
   };
 
   const res = await postCheckIn(payload);
   if (res.code === 1000) {
     alert("Thành công!");
-    location.reload();
-  } else alert("Lỗi: " + res.message);
+    clearSelectedBooks();
+    window.selectedBooks = [];
+    window.currentActiveBooking = await getMyActiveBooking();
+    renderSelectedBooks();
+    closeModal("modalBorrow");
+    initBookingStatus();
+    return;
+  }
+
+  alert("Lỗi: " + res.message);
 }
 
 async function checkAndPopulateUser(username) {
