@@ -11,7 +11,7 @@ public record UserResponse(
         String role,
         boolean active
 ) {
-    // Factory method để map từ Entity sang DTO một cách tiện lợi
+    // Factory method để map từ Entity sang DTO
     public static UserResponse fromEntity(User user) {
         return new UserResponse(
                 user.getId(),

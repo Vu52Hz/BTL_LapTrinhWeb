@@ -28,6 +28,7 @@ async function renderUsers() {
 
     // 2. Lọc theo Trạng thái Checkbox
     users = users.filter((u) => {
+      if (u.role === "ADMIN") return false;
       if (u.active && showActive) return true;
       if (!u.active && showLocked) return true;
       return false;
@@ -195,7 +196,7 @@ function openUserModal() {
   document.getElementById("modalEditUser").classList.add("is-open");
 }
 
-// 5. Lắng nghe sự kiện tìm kiếm khi người dùng nhập liệu
+// 6. Lắng nghe sự kiện tìm kiếm khi người dùng nhập liệu
 document.addEventListener("DOMContentLoaded", () => {
   // Load danh sách lần đầu
   renderUsers();

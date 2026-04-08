@@ -48,7 +48,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
         JOIN booking_details bd ON b.id = bd.book_id
         JOIN (
             SELECT id FROM booking 
-            ORDER BY start_time DESC -- Đã đổi created_at thành start_time
+            ORDER BY start_time DESC
             LIMIT 100
         ) recent_bookings ON bd.booking_id = recent_bookings.id
         WHERE b.is_active = true

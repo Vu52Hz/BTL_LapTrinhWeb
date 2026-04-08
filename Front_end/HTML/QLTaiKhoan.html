@@ -111,6 +111,14 @@
                   class="input-field"
                   placeholder="Mật khẩu"
                 />
+                <div class="show-password-container">
+                  <input
+                    type="checkbox"
+                    id="check-login"
+                    onclick="togglePassword('editPassword')"
+                  />
+                  <label for="check-login">Hiển thị mật khẩu</label>
+                </div>
               </div>
             </div>
             <button class="btn-submit" onclick="saveUser()">

@@ -267,3 +267,11 @@ function changeQty(inputId, delta) {
     input.value = val;
   }
 }
+
+function togglePassword(inputId) {
+  const passwordInput = document.getElementById(inputId);
+  if (passwordInput) {
+    passwordInput.type =
+      passwordInput.type === "password" ? "text" : "password";
+  }
+}
