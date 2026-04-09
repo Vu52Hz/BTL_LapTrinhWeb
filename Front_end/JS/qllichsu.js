@@ -1,8 +1,3 @@
-/**
- * QUẢN LÝ LỊCH SỬ MƯỢN SÁCH & PHÒNG ĐỌC
- * Kết nối với Spring Boot API v1
- */
-
 // 1. Cấu hình hằng số (Dùng API_URL từ file data.js nếu đã import, hoặc định nghĩa tại đây)
 const BOOKING_API = "http://localhost:8080/api/v1/bookings";
 
@@ -90,8 +85,9 @@ async function renderHistory() {
     const roomFilter = document.getElementById("filterRoom");
     if (roomFilter) {
       const currentRoom = roomFilter.value;
+      const originalData = result.result || [];
       const roomNames = [
-        ...new Set((data || []).map((h) => h.roomName || "")),
+        ...new Set(originalData.map((h) => h.roomName || "")),
       ].filter(Boolean);
       roomFilter.innerHTML =
         `<option value="">-- Tất cả phòng --</option>` +

@@ -140,33 +140,82 @@ document.addEventListener("DOMContentLoaded", async () => {
   ) {
     const modalHtml = `
     <div id="modalBorrow" class="modal-overlay">
-        <div class="modal-card" style="width:600px">
+        <div class="modal-card" style="width: 650px">
             <span class="modal-card__close" onclick="closeModal('modalBorrow')">&times;</span>
             <div class="modal-card__title">ĐƠN ĐĂNG KÝ MƯỢN</div>
             <div class="modal-card__body">
-                <input type="text" id="readerUsername" class="input-field" placeholder="Username người mượn...">
-                <div style="display:flex; gap:10px">
-                    <input type="text" id="readerName" class="input-field" style="flex:1" placeholder="Họ tên" readonly>
-                    <input type="text" id="readerPhone" class="input-field" style="flex:1" placeholder="SĐT" readonly>
+                <div class="modal-card__input-area">
+                    <input type="text" id="readerUsername" class="input-field" placeholder="Username người mượn..." />
+                    <div style="display: flex; gap: 10px">
+                        <input type="text" id="readerName" class="input-field" placeholder="Tên người đọc" style="flex: 1" readonly />
+                        <input type="text" id="readerPhone" class="input-field" placeholder="Số điện thoại" style="flex: 1" readonly />
+                    </div>
+                    <select id="readerRoom" class="input-field"></select>
+
+                    <div class="borrow-search-wrapper" style="position: relative; margin-top: 10px">
+                        <input type="text" id="modalBookSearch" class="input-field" placeholder="Tìm tên sách để mượn..." oninput="searchBooksInModal()" />
+                        <div id="modalBookSearchResult" class="borrow-result-popup" style="width: 100%; top: 45px"></div>
+                    </div>
+
+                    <div id="selectedBooksDisplay" class="selected-books-list" style="max-height: 200px; overflow-y: auto; margin-top: 10px; border: 1px solid #ddd; padding: 10px;">
+                        <p style="font-size: 13px; color: #888">Chưa có sách nào được chọn...</p>
+                    </div>
                 </div>
-                <select id="readerRoom" class="input-field"></select>
-                <div class="borrow-search-wrapper" style="position:relative; margin-top:10px">
-                    <input type="text" id="modalBookSearch" class="input-field" placeholder="Tìm thêm sách..." oninput="searchBooksInModal()">
-                    <div id="modalBookSearchResult" class="borrow-result-popup"></div>
-                </div>
-                <div id="selectedBooksDisplay" class="selected-books-list" style="max-height:150px; overflow-y:auto; margin-top:10px; border:1px solid #ddd; padding:10px;"></div>
             </div>
             <button class="btn-submit" onclick="submitBorrowRequest()">Xác nhận mượn</button>
         </div>
     </div>
-  
+
     <div id="modalActiveOrder" class="modal-overlay">
         <div class="modal-card">
             <span class="modal-card__close" onclick="closeModal('modalActiveOrder')">&times;</span>
-            <div class="modal-card__title">ĐƠN ĐANG SỬ DỤNG</div>
-            <div class="modal-card__body"><div id="activeOrderDetail"></div></div>
+            <div class="modal-card__title">ĐƠN MƯỢN HIỆN TẠI</div>
+            <div class="modal-card__body">
+                <div id="activeOrderDetail" class="modal-card__input-area"></div>
+            </div>
+            <div style="padding: 0 30px 30px">
+                <button class="btn-submit" style="width: 100%; margin: 0; background: var(--danger-red); color: white;" onclick="handleFinalCheckOut()">
+                    Trả phòng & Kết thúc
+                </button>
+            </div>
         </div>
-    </div>`;
+    </div>
+    
+    <div id="modalUserProfile" class="modal-overlay">
+        <div class="modal-card" style="width: 400px;">
+            <span class="modal-card__close" onclick="closeModal('modalUserProfile')">&times;</span>
+            <div class="modal-card__title">THÔNG TIN CÁ NHÂN</div>
+            <div class="modal-card__body">
+                <div class="modal-card__input-area">
+                    <input type="text" id="profileName" class="input-field" placeholder="Họ và tên" readonly />
+                    <input type="text" id="profilePhone" class="input-field" placeholder="Số điện thoại" readonly />
+                    <button class="btn-action" style="background: #ffc107; color: #000; border: none; margin-top: 15px; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; font-weight: bold;" onclick="openChangeMyPasswordModal()">
+                        Đổi mật khẩu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalChangeMyPassword" class="modal-overlay">
+        <div class="modal-card" style="width: 400px;">
+            <span class="modal-card__close" onclick="closeModal('modalChangeMyPassword')">&times;</span>
+            <div class="modal-card__title">ĐỔI MẬT KHẨU</div>
+            <div class="modal-card__body">
+                <div class="modal-card__input-area">
+                    <input type="password" id="myOldPassword" class="input-field" placeholder="Mật khẩu hiện tại" />
+                    <input type="password" id="myNewPassword" class="input-field" placeholder="Mật khẩu mới" />
+                    <input type="password" id="myConfirmPassword" class="input-field" placeholder="Nhập lại mật khẩu mới" />
+                    <div class="show-password-container" style="margin-top: 10px;">
+                        <input type="checkbox" id="check-my-password" onclick="toggleMyPasswordVisibility()" />
+                        <label for="check-my-password">Hiển thị mật khẩu</label>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-submit" style="margin-top: 15px;" onclick="submitChangeMyPassword()">Xác nhận đổi</button>
+        </div>
+    </div>
+    `;
     document.body.insertAdjacentHTML("beforeend", modalHtml);
   }
 
@@ -179,27 +228,143 @@ document.addEventListener("DOMContentLoaded", async () => {
   applyAdminRestrictions();
 });
 
+// ==========================================
+// XỬ LÝ MODAL ĐỔI MẬT KHẨU CÁ NHÂN
+// ==========================================
+
+// 1. Mở modal đổi mật khẩu
+function openChangeMyPasswordModal() {
+  // Xóa trắng các trường nhập liệu trước khi mở
+  document.getElementById("myOldPassword").value = "";
+  document.getElementById("myNewPassword").value = "";
+  document.getElementById("myConfirmPassword").value = "";
+  document.getElementById("check-my-password").checked = false;
+
+  // Đặt lại type là password để ẩn ký tự
+  document.getElementById("myOldPassword").type = "password";
+  document.getElementById("myNewPassword").type = "password";
+  document.getElementById("myConfirmPassword").type = "password";
+
+  // Đóng modal profile lại cho gọn màn hình (tùy chọn)
+  closeModal("modalUserProfile");
+
+  // Mở modal đổi mật khẩu
+  document.getElementById("modalChangeMyPassword").classList.add("is-open");
+}
+
+// 2. Tắt/bật hiển thị mật khẩu cho 3 ô input cùng lúc
+function toggleMyPasswordVisibility() {
+  const isChecked = document.getElementById("check-my-password").checked;
+  const type = isChecked ? "text" : "password";
+
+  document.getElementById("myOldPassword").type = type;
+  document.getElementById("myNewPassword").type = type;
+  document.getElementById("myConfirmPassword").type = type;
+}
+
+// 3. Gửi request đổi mật khẩu
+async function submitChangeMyPassword() {
+  const oldPassword = document.getElementById("myOldPassword").value.trim();
+  const newPassword = document.getElementById("myNewPassword").value.trim();
+  const confirmPassword = document
+    .getElementById("myConfirmPassword")
+    .value.trim();
+
+  // Validate Frontend cơ bản
+  if (!oldPassword || !newPassword || !confirmPassword) {
+    return alert("Vui lòng nhập đầy đủ thông tin!");
+  }
+
+  if (newPassword !== confirmPassword) {
+    return alert("Mật khẩu mới và mật khẩu xác nhận không khớp!");
+  }
+
+  if (newPassword.length < 6) {
+    return alert("Mật khẩu mới phải có ít nhất 6 ký tự!");
+  }
+
+  try {
+    const res = await fetch(`${API_URL}/users/me/change-password`, {
+      method: "POST", // Hoặc PUT tùy backend của bạn quy định
+      headers: getHeaders(),
+      body: JSON.stringify({
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+        confirmPassword: confirmPassword,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("Đổi mật khẩu thành công! Vui lòng đăng nhập lại để tiếp tục.");
+      closeModal("modalChangeMyPassword");
+
+      // Bắt user đăng xuất để reset token bằng hàm có sẵn của bạn
+      logout();
+    } else {
+      alert(
+        "Lỗi: " +
+          (data.message ||
+            "Không thể đổi mật khẩu. Vui lòng kiểm tra lại mật khẩu hiện tại."),
+      );
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Lỗi kết nối Server!");
+  }
+}
+
 function logout() {
   localStorage.clear();
   window.location.href = "Login.html";
 }
 
 async function openProfileModal() {
-  // Gọi API lấy thông tin mới nhất từ BE thay vì dùng LocalStorage
-  const res = await fetch(`${API_URL}/users/me`, { headers: getHeaders() });
-  const user = (await res.json()).result;
+  try {
+    const modal = document.getElementById("modalUserProfile");
+    if (!modal) {
+      alert("Lỗi: Không tìm thấy giao diện Modal Profile trên trang!");
+      return;
+    }
 
-  document.getElementById("profileName").value = user.fullName || "";
-  document.getElementById("profilePhone").value = user.phone || "";
-  document.getElementById("modalUserProfile").classList.add("is-open");
+    // Gọi API lấy thông tin mới nhất từ BE
+    const res = await fetch(`${API_URL}/users/me`, { headers: getHeaders() });
+
+    // Nếu token hết hạn hoặc lỗi server
+    if (!res.ok) {
+      throw new Error(`API trả về mã lỗi: ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    // Đề phòng backend của bạn trả về data.data thay vì data.result
+    const user = data.result || data.data || {};
+
+    // Gán dữ liệu vào input
+    const nameInput = document.getElementById("profileName");
+    const phoneInput = document.getElementById("profilePhone");
+
+    if (nameInput) nameInput.value = user.fullName || user.fullname || "";
+    if (phoneInput) phoneInput.value = user.phone || "";
+
+    // Mở modal
+    modal.classList.add("is-open");
+  } catch (error) {
+    console.error("Lỗi khi mở modal profile:", error);
+    alert(
+      "Không thể tải thông tin cá nhân. Mở F12 sang tab Console để xem chi tiết lỗi nhé!",
+    );
+
+    // (Tuỳ chọn) Nếu bạn muốn lỗi API mà vẫn ép mở Modal lên để xem giao diện thì bỏ comment dòng dưới:
+    // document.getElementById("modalUserProfile").classList.add("is-open");
+  }
 }
 
 function getUserRole() {
-  const user = JSON.parse(localStorage.getItem("library_login")); // Hoặc nơi bạn lưu user info
+  const user = JSON.parse(localStorage.getItem("library_login"));
   return user ? user.role : null;
 }
-
-// common.js
 
 function isAdmin() {
   const rolesRaw = localStorage.getItem("roles");
