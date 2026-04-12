@@ -10,65 +10,97 @@
     <div class="app-layout">
       <aside class="side-navigation" id="sidebarMenu"></aside>
       <main class="app-container">
-        <div class="toolbar" style="flex-wrap: wrap; gap: 20px">
-          <div style="display: flex; gap: 10px; flex: 1; min-width: 300px">
-            <div class="search-box">
-              <input
-                type="text"
-                id="historySearch"
-                placeholder="Tìm theo tên"
-                oninput="renderHistory()"
-              />
+        <div
+          class="toolbar"
+          style="flex-wrap: wrap; gap: 20px; flex-direction: column"
+        >
+          <div style="display: flex; gap: 20px; flex-wrap: wrap; width: 100%">
+            <div style="display: flex; gap: 10px; flex: 1; min-width: 300px">
+              <div class="search-box">
+                <input
+                  type="text"
+                  id="historySearch"
+                  placeholder="Tìm theo tên"
+                  oninput="renderHistory()"
+                />
+              </div>
+              <select
+                id="filterRoom"
+                onchange="renderHistory()"
+                style="width: 150px"
+              >
+                <option value="">-- Tất cả phòng --</option>
+              </select>
             </div>
-            <select
-              id="filterRoom"
-              onchange="renderHistory()"
-              style="width: 150px"
+
+            <div style="display: flex; gap: 10px; align-items: center">
+              <span>Từ:</span>
+              <input type="date" id="dateFrom" onchange="renderHistory()" />
+              <span>Đến:</span>
+              <input type="date" id="dateTo" onchange="renderHistory()" />
+            </div>
+
+            <div
+              style="
+                display: flex;
+                gap: 15px;
+                align-items: center;
+                background: #eee;
+                padding: 5px 15px;
+                border-radius: 4px;
+              "
             >
-              <option value="">-- Tất cả phòng --</option>
-            </select>
+              <label style="cursor: pointer">
+                <input
+                  type="checkbox"
+                  id="statusReading"
+                  checked
+                  onchange="renderHistory()"
+                />
+                Đang đọc
+              </label>
+              <label style="cursor: pointer">
+                <input
+                  type="checkbox"
+                  id="statusFinished"
+                  checked
+                  onchange="renderHistory()"
+                />
+                Đã trả
+              </label>
+            </div>
           </div>
 
           <div style="display: flex; gap: 10px; align-items: center">
-            <span>Từ:</span>
-            <input type="date" id="dateFrom" onchange="renderHistory()" />
-            <span>Đến:</span>
-            <input type="date" id="dateTo" onchange="renderHistory()" />
-          </div>
-
-          <div
-            style="
-              display: flex;
-              gap: 15px;
-              align-items: center;
-              background: #eee;
-              padding: 5px 15px;
-              border-radius: 4px;
-            "
-          >
-            <label style="cursor: pointer"
-              ><input
-                type="checkbox"
-                id="statusReading"
-                checked
-                onchange="renderHistory()"
-              />
-              Đang đọc</label
+            <span style="font-weight: bold">Sắp xếp theo:</span>
+            <select
+              id="sortBy"
+              onchange="renderHistory()"
+              style="padding: 5px; border-radius: 4px"
             >
-            <label style="cursor: pointer"
-              ><input
-                type="checkbox"
-                id="statusFinished"
-                checked
-                onchange="renderHistory()"
-              />
-              Đã trả</label
-            >
+              <option value="time_desc">Thời gian trả (Mới nhất)</option>
+              <option value="time_asc">Thời gian trả (Cũ nhất)</option>
+              <option value="count_desc">Số lượt đọc (Nhiều - Ít)</option>
+              <option value="count_asc">Số lượt đọc (Ít - Nhiều)</option>
+            </select>
           </div>
         </div>
 
+        <div
+          id="statisticsSummary"
+          style="
+            margin-top: 15px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            border-radius: 4px;
+            font-size: 15px;
+            margin-bottom: 15px;
+          "
+        ></div>
+
         <div class="table-container">
-          <table>
+          <table style="width: 100%">
             <thead>
               <tr>
                 <th>Tên người đọc</th>
@@ -76,6 +108,7 @@
                 <th>Giờ vào</th>
                 <th>Giờ trả</th>
                 <th>Sách mượn</th>
+                <th style="text-align: center">Tổng số lượt đọc</th>
                 <th>Thao tác</th>
               </tr>
             </thead>

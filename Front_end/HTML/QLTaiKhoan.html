@@ -10,7 +10,7 @@
     <div class="app-layout">
       <aside class="side-navigation" id="sidebarMenu"></aside>
       <main class="app-container">
-        <div class="toolbar">
+        <div class="toolbar" style="flex-wrap: wrap">
           <div class="search-box">
             <input
               type="text"
@@ -19,6 +19,42 @@
               oninput="renderUsers()"
             />
           </div>
+
+          <div
+            class="date-filter"
+            style="
+              display: flex;
+              gap: 10px;
+              margin-left: 20px;
+              align-items: center;
+            "
+          >
+            <label
+              >Từ:
+              <input
+                type="date"
+                id="startDate"
+                onchange="
+                  renderUsers();
+                  renderUserChart();
+                "
+                class="input-field"
+                style="width: auto; padding: 5px"
+            /></label>
+            <label
+              >Đến:
+              <input
+                type="date"
+                id="endDate"
+                onchange="
+                  renderUsers();
+                  renderUserChart();
+                "
+                class="input-field"
+                style="width: auto; padding: 5px"
+            /></label>
+          </div>
+
           <div
             class="filter-group"
             style="
@@ -52,6 +88,36 @@
           </button>
         </div>
 
+        <div
+          id="statSection"
+          class="statistics-area"
+          style="
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            gap: 20px;
+            font-size: 16px;
+          "
+        >
+          <span>📊 <b>THỐNG KÊ (Tính đến ngày chọn):</b></span>
+          <span style="color: #0d6efd"
+            >Tổng tài khoản: <b id="statTotal">0</b></span
+          >
+          <span style="color: #198754"
+            >Đang hoạt động: <b id="statActive">0</b></span
+          >
+          <span style="color: #dc3545">Bị khóa: <b id="statLocked">0</b></span>
+        </div>
+
+        <div id="chartContainer" style="margin-top: 20px">
+          <canvas id="userChart" height="100"></canvas>
+        </div>
+        <div id="chartContainer" style="margin-top: 20px">
+          <canvas id="userChart" height="100"></canvas>
+        </div>
+
         <div class="table-container">
           <table>
             <thead>
@@ -61,7 +127,8 @@
                 <th>Số điện thoại</th>
                 <th>Tên đăng nhập</th>
                 <th>Vai trò</th>
-                <th>Trạng thái</th>
+                <th>Ngày tạo</th>
+                <th>Trạng thái (Tại thời điểm B)</th>
                 <th>Thao tác</th>
               </tr>
             </thead>
@@ -129,6 +196,7 @@
       </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/Front_end/JS/common.js"></script>
     <script src="/Front_end/JS/qltaikhoan.js"></script>
   </body>

@@ -18,7 +18,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
        "LEFT JOIN FETCH b.user " + 
        "LEFT JOIN FETCH b.bookingDetails bd " +
        "LEFT JOIN FETCH bd.book " + 
-       "LEFT JOIN FETCH bd.inventory " + // THÊM FETCH INVENTORY
+       "LEFT JOIN FETCH bd.inventory " + 
        "WHERE b.id = :id")
     Optional<Booking> findByIdWithDetails(@Param("id") Long id);
 

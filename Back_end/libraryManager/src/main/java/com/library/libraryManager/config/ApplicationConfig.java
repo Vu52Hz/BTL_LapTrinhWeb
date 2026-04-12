@@ -14,7 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration(proxyBeanMethods = false) // Thêm tham số này vào giúp Spring tối ưu hóa việc tạo bean, tránh việc tạo nhiều instance không cần thiết
 @RequiredArgsConstructor
 public class ApplicationConfig {
-    private final UserDetailsService userDetailsService; // Gọi Interface, không gọi UserService
+    private final UserDetailsService userDetailsService; 
     private final PasswordEncoder passwordEncoder; // Spring sẽ lấy từ PasswordConfig
 
     @Bean

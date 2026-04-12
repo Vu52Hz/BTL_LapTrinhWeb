@@ -43,11 +43,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Roles role; // Sử dụng Enum để đảm bảo an toàn dữ liệu
 
-    // // --- THÊM QUAN HỆ VỚI ROOM ---
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "room_id") // Tạo cột room_id trong bảng users để làm khóa ngoại
-    // private Room room;
-
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist

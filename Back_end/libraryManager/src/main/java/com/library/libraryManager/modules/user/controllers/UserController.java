@@ -5,14 +5,18 @@ import com.library.libraryManager.common.exception.AppException;
 import com.library.libraryManager.common.exception.ErrorCode;
 import com.library.libraryManager.modules.user.dtos.requests.ChangePasswordRequest;
 import com.library.libraryManager.modules.user.dtos.requests.UpdateInfoRequest;
+import com.library.libraryManager.modules.user.dtos.responses.MonthlyUserStatResponse;
 import com.library.libraryManager.modules.user.dtos.responses.UserResponse;
 import com.library.libraryManager.modules.user.entities.User;
 import com.library.libraryManager.modules.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -68,12 +72,26 @@ public class UserController {
                 .build();
     }
 
+//     @GetMapping
+//     @PreAuthorize("hasRole('ADMIN')")
+//     public ApiResponse<List<UserResponse>> getAllUsers() {
+//         List<UserResponse> result = userService.getAllUsers().stream()
+//                 .map(UserResponse::fromEntity)
+//                 .toList();
+//         return ApiResponse.<List<UserResponse>>builder()
+//                 .result(result)
+//                 .build();
+//     }
+
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<List<UserResponse>> getAllUsers() {
-        List<UserResponse> result = userService.getAllUsers().stream()
-                .map(UserResponse::fromEntity)
-                .toList();
+    public ApiResponse<List<UserResponse>> getAllUsers(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        
+        // Truyền ngày tháng xuống Service để tính toán lịch sử
+        List<UserResponse> result = userService.getAllUsers(startDate, endDate);
+        
         return ApiResponse.<List<UserResponse>>builder()
                 .result(result)
                 .build();
@@ -107,4 +125,15 @@ public class UserController {
                 .result(result)
                 .build();
     }
+
+        @GetMapping("/statistics/monthly")
+        @PreAuthorize("hasRole('ADMIN')")
+        public ApiResponse<List<MonthlyUserStatResponse>> getMonthlyStats(
+                @RequestParam LocalDate startDate,
+                @RequestParam LocalDate endDate
+        ) {
+        return ApiResponse.<List<MonthlyUserStatResponse>>builder()
+                .result(userService.getMonthlyStats(startDate, endDate))
+                .build();
+        }
 }
